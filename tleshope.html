@@ -6,18 +6,11 @@
 <title>TleShope | ระบบร้านค้าอัจฉริยะ</title>
 
 <!-- ========================= EXTERNAL LIBRARIES ========================= -->
-<!-- Bootstrap 5 สำหรับโครงสร้าง UI และ Responsive Grid -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<!-- Bootstrap Icons สำหรับไอคอนสวยๆ ทั่วทั้งระบบ -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-<!-- Google Fonts: Kanit (ฟอนต์ไทยที่อ่านง่าย ทันสมัย) -->
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-/* ==========================================================================
-   THEME VARIABLES — ธีมสีขาว-ม่วง (White & Purple Theme)
-   ปรับสีทั้งระบบได้จากจุดเดียวตรงนี้
-   ========================================================================== */
 :root{
   --purple-900:#4C1D95;
   --purple-700:#6D28D9;
@@ -46,7 +39,6 @@ body{
   padding-bottom:40px;
 }
 
-/* ---------- Navbar ---------- */
 .navbar-tleshope{
   background:linear-gradient(90deg,var(--purple-700) 0%,var(--purple-500) 100%);
   box-shadow:var(--shadow-soft);
@@ -71,7 +63,6 @@ body{
   opacity:1;
 }
 
-/* ---------- Generic surfaces ---------- */
 .card-surface{
   background:var(--white);
   border:1px solid var(--purple-100);
@@ -83,7 +74,6 @@ body{
   color:var(--purple-900);
 }
 
-/* ---------- Buttons ---------- */
 .btn-purple{
   background:var(--purple-600);
   border-color:var(--purple-600);
@@ -106,7 +96,6 @@ body{
 }
 .btn-soft-purple:hover{ background:var(--purple-100); }
 
-/* ---------- Category chips ---------- */
 .category-chip{
   border-radius:999px;
   padding:.5rem 1.15rem;
@@ -126,7 +115,6 @@ body{
   box-shadow:var(--shadow-soft);
 }
 
-/* ---------- Product Card ---------- */
 .product-card{
   border-radius:var(--radius-lg);
   border:1px solid var(--purple-100);
@@ -160,7 +148,6 @@ body{
   font-size:1.15rem;
 }
 
-/* ---------- Barcode scan bar ---------- */
 .scan-bar{
   background:linear-gradient(135deg,var(--purple-900),var(--purple-600));
   border-radius:var(--radius-lg);
@@ -180,7 +167,6 @@ body{
   box-shadow:none;
 }
 
-/* ---------- Cart offcanvas ---------- */
 .offcanvas-purple .offcanvas-header{
   background:var(--purple-600);
   color:#fff;
@@ -209,7 +195,6 @@ body{
   box-shadow:var(--shadow-strong);
 }
 
-/* ---------- Receipt slip ---------- */
 .receipt-slip{
   font-family:'Kanit', monospace;
   background:#fff;
@@ -223,7 +208,6 @@ body{
 .receipt-slip .r-title{ font-weight:700; color:var(--purple-700); font-size:1.2rem; }
 .receipt-row{ display:flex; justify-content:space-between; font-size:.88rem; margin-bottom:2px;}
 
-/* ---------- Admin sidebar ---------- */
 .admin-sidebar .list-group-item{
   border:none;
   border-radius:var(--radius-md) !important;
@@ -249,7 +233,6 @@ body{
 .stat-card .label{ font-size:.85rem; opacity:.9; }
 .stat-card .value{ font-size:1.6rem; font-weight:700; }
 
-/* ---------- Camera scanner box ---------- */
 #cameraReaderCustomer, #cameraReaderAdmin{
   width:100%;
   border-radius:var(--radius-md);
@@ -257,7 +240,6 @@ body{
   border:2px solid var(--purple-200,#DDD6FE);
 }
 
-/* ---------- Login page ---------- */
 .login-wrapper{
   min-height:70vh;
   display:flex;
@@ -273,14 +255,22 @@ body{
   box-shadow:var(--shadow-strong);
 }
 
-/* ---------- Toast ---------- */
 .toast-purple{
   border:none;
   border-radius:var(--radius-md);
   box-shadow:var(--shadow-strong);
 }
 
-/* scrollbar niceties */
+/* Loading Overlay Screen */
+#loadingOverlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(255,255,255,0.8);
+  z-index: 9999;
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+}
+
 ::-webkit-scrollbar{ width:8px; height:8px; }
 ::-webkit-scrollbar-thumb{ background:var(--purple-200,#DDD6FE); border-radius:8px; }
 
@@ -291,9 +281,12 @@ body{
 </head>
 <body>
 
-<!-- ==========================================================================
-     NAVBAR — เมนูหลักด้านบน ใช้สลับระหว่างหน้าลูกค้า / หน้าแอดมิน
-     ========================================================================== -->
+<!-- Loading Screen -->
+<div id="loadingOverlay">
+  <div class="spinner-border text-primary" role="status" style="color: var(--purple-600) !important;"></div>
+  <div class="mt-2 fw-bold" style="color: var(--purple-900);">กำลังเชื่อมต่อ Google Sheets...</div>
+</div>
+
 <nav class="navbar navbar-tleshope navbar-expand-lg sticky-top py-2">
   <div class="container">
     <a class="navbar-brand d-flex align-items-center gap-2" href="#">
@@ -312,12 +305,8 @@ body{
 
 <div class="container mt-4">
 
-  <!-- ==========================================================================
-       PAGE 1: CUSTOMER UI — หน้าสำหรับลูกค้าเลือกซื้อสินค้า
-       ========================================================================== -->
+  <!-- PAGE 1: CUSTOMER UI -->
   <div id="customerPage">
-
-    <!-- ---------- Barcode Scan Bar (พิมพ์/ยิงบาร์โค้ด + เปิดกล้อง) ---------- -->
     <div class="scan-bar mb-4">
       <div class="row g-2 align-items-center">
         <div class="col-12 col-md-7">
@@ -332,17 +321,11 @@ body{
       </div>
     </div>
 
-    <!-- ---------- Category Filter Chips (สร้างแบบไดนามิกจาก localStorage) ---------- -->
     <div class="d-flex gap-2 overflow-auto pb-2 mb-3" id="categoryChipRow"></div>
-
-    <!-- ---------- Product Grid ---------- -->
     <div class="row g-3" id="productGrid"></div>
-
   </div>
 
-  <!-- ==========================================================================
-       PAGE 2a: ADMIN LOGIN — ต้องล็อกอินก่อนเข้าหลังบ้าน
-       ========================================================================== -->
+  <!-- PAGE 2a: ADMIN LOGIN -->
   <div id="adminLoginPage" class="d-none">
     <div class="login-wrapper">
       <div class="login-card">
@@ -369,12 +352,9 @@ body{
     </div>
   </div>
 
-  <!-- ==========================================================================
-       PAGE 2b: ADMIN DASHBOARD — จัดการร้านค้าทั้งหมด
-       ========================================================================== -->
+  <!-- PAGE 2b: ADMIN DASHBOARD -->
   <div id="adminDashboardPage" class="d-none">
     <div class="row g-3">
-      <!-- Sidebar เมนูย่อยของแอดมิน -->
       <div class="col-12 col-lg-3">
         <div class="card-surface p-3 admin-sidebar">
           <div class="d-flex align-items-center justify-content-between mb-3">
@@ -404,9 +384,7 @@ body{
         </div>
       </div>
 
-      <!-- เนื้อหาแต่ละแท็บ -->
       <div class="col-12 col-lg-9">
-
         <!-- ===== TAB: รายงานการเงิน ===== -->
         <div id="tab-report" class="admin-tab-content">
           <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
@@ -553,23 +531,17 @@ body{
             <div id="qrPreviewWrap" class="text-center"></div>
           </div>
         </div>
-
       </div>
     </div>
   </div>
+</div>
 
-</div><!-- /container -->
-
-<!-- ==========================================================================
-     FLOATING CART BUTTON — ปุ่มลอยเปิดตะกร้าสินค้า (แสดงเฉพาะหน้าลูกค้า)
-     ========================================================================== -->
+<!-- FLOATING CART BUTTON -->
 <button class="btn btn-purple floating-cart-btn" id="floatingCartBtn" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas">
   <i class="bi bi-cart3"></i> ตะกร้า <span class="badge bg-light text-purple ms-1" id="cartCountBadge">0</span>
 </button>
 
-<!-- ==========================================================================
-     CART OFFCANVAS — แผงตะกร้าสินค้า เลื่อนออกจากขวา
-     ========================================================================== -->
+<!-- CART OFFCANVAS -->
 <div class="offcanvas offcanvas-end offcanvas-purple" tabindex="-1" id="cartOffcanvas" style="width:420px;max-width:95vw;">
   <div class="offcanvas-header">
     <h5 class="offcanvas-title"><i class="bi bi-cart3"></i> ตะกร้าสินค้าของคุณ</h5>
@@ -577,8 +549,6 @@ body{
   </div>
   <div class="offcanvas-body d-flex flex-column">
     <div id="cartItemsWrap" class="flex-grow-1 overflow-auto"></div>
-
-    <!-- ช่องกรอกโค้ดส่วนลด -->
     <div class="mt-3">
       <label class="form-label small text-muted">โค้ดส่วนลด (ถ้ามี)</label>
       <div class="input-group">
@@ -587,7 +557,6 @@ body{
       </div>
       <div id="couponMsg" class="small mt-1"></div>
     </div>
-
     <hr>
     <div class="receipt-row"><span>ยอดรวม</span><span id="cartSubtotal">฿0</span></div>
     <div class="receipt-row text-success"><span>ส่วนลด</span><span id="cartDiscount">-฿0</span></div>
@@ -601,9 +570,7 @@ body{
   </div>
 </div>
 
-<!-- ==========================================================================
-     CAMERA SCANNER MODAL (ใช้ร่วมกันทั้งฝั่งลูกค้า และฝั่งแอดมิน)
-     ========================================================================== -->
+<!-- CAMERA SCANNER MODAL -->
 <div class="modal fade" id="cameraModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -620,9 +587,7 @@ body{
   </div>
 </div>
 
-<!-- ==========================================================================
-     PAYMENT MODAL — เลือกวิธีชำระเงิน (เงินสด / สแกนจ่าย QR)
-     ========================================================================== -->
+<!-- PAYMENT MODAL -->
 <div class="modal fade" id="paymentModal" tabindex="-1" data-bs-backdrop="static">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -631,7 +596,6 @@ body{
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <!-- Tabs เลือกวิธีชำระเงิน -->
         <ul class="nav nav-pills nav-justified mb-3" role="tablist">
           <li class="nav-item">
             <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#payCash" type="button">
@@ -644,9 +608,7 @@ body{
             </button>
           </li>
         </ul>
-
         <div class="tab-content">
-          <!-- --- แท็บเงินสด --- -->
           <div class="tab-pane fade show active" id="payCash">
             <div class="text-center mb-3">
               <div class="text-muted small">ยอดที่ต้องชำระ</div>
@@ -665,8 +627,6 @@ body{
               <i class="bi bi-check-circle"></i> ยืนยันชำระเงินสด
             </button>
           </div>
-
-          <!-- --- แท็บ QR --- -->
           <div class="tab-pane fade" id="payQR">
             <div class="text-center">
               <div id="qrPayWrap"></div>
@@ -683,9 +643,7 @@ body{
   </div>
 </div>
 
-<!-- ==========================================================================
-     RECEIPT MODAL — ใบเสร็จรับเงินฉบับสลิป + ปุ่มดาวน์โหลด PDF
-     ========================================================================== -->
+<!-- RECEIPT MODAL -->
 <div class="modal fade" id="receiptModal" tabindex="-1" data-bs-backdrop="static">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -694,9 +652,7 @@ body{
         <button type="button" class="btn-close" onclick="closeReceipt()"></button>
       </div>
       <div class="modal-body">
-        <div class="receipt-slip" id="receiptSlipContent">
-          <!-- เนื้อหาใบเสร็จจะถูกสร้างด้วย JS -->
-        </div>
+        <div class="receipt-slip" id="receiptSlipContent"></div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-outline-purple" onclick="downloadReceiptPDF()">
@@ -710,9 +666,7 @@ body{
   </div>
 </div>
 
-<!-- ==========================================================================
-     TOAST CONTAINER — แจ้งเตือนแบบนุ่มนวล แทนการใช้ alert()
-     ========================================================================== -->
+<!-- TOAST CONTAINER -->
 <div class="toast-container position-fixed bottom-0 start-50 translate-middle-x p-3" style="z-index:1080;">
   <div id="mainToast" class="toast toast-purple align-items-center border-0" role="alert">
     <div class="d-flex">
@@ -722,7 +676,6 @@ body{
   </div>
 </div>
 
-<!-- เสียง Beep เมื่อแสกนบาร์โค้ดผ่านกล้องสำเร็จ (สร้างด้วย base64 เสียงสั้นๆ) -->
 <audio id="beepSound" src="data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YTtvT18=" preload="auto"></audio>
 
 <!-- ========================= EXTERNAL LIBRARY SCRIPTS ========================= -->
@@ -732,79 +685,98 @@ body{
 
 <script>
 /* ============================================================================
-   TleShope — Main Application Script
-   ทุกส่วนของระบบ (Customer UI + Admin Dashboard) ถูกควบคุมด้วยไฟล์นี้
-   ข้อมูลทั้งหมดถูกจำลองด้วย LocalStorage เพื่อทำหน้าที่เป็นฐานข้อมูล
+   CONFIG: นำ URL ของ Apps Script Web App ที่ Deploy แล้วมาวางที่นี่
    ============================================================================ */
+var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz-ZHV9uPVLVs0TJPrcLZLBSElkdCTjorrAXibmyfEOTt8WM2jCHPNrn8i3JAegYYMlnA/exec';
 
-/* ---------------------------------------------------------------------------
-   1) STORAGE HELPERS — ฟังก์ชันช่วยอ่าน/เขียนข้อมูลลง LocalStorage
-   --------------------------------------------------------------------------- */
 const STORAGE_KEYS = {
-  categories: 'tleshope_categories',
-  products: 'tleshope_products',
-  coupons: 'tleshope_coupons',
   qr: 'tleshope_qr_image',
-  transactions: 'tleshope_transactions',
   adminSession: 'tleshope_admin_session'
 };
 
-function loadData(key, defaultValue){
-  const raw = localStorage.getItem(key);
-  if(raw === null) return defaultValue;
-  try{ return JSON.parse(raw); }catch(e){ return defaultValue; }
-}
-function saveData(key, value){
-  localStorage.setItem(key, JSON.stringify(value));
-}
-
-/* ---------------------------------------------------------------------------
-   2) INITIAL SEED DATA — ข้อมูลตัวอย่างเริ่มต้น (ใช้ครั้งแรกที่ยังไม่มีข้อมูล)
-   --------------------------------------------------------------------------- */
-let categories = loadData(STORAGE_KEYS.categories, ['เครื่องดื่ม', 'ขนม', 'ของใช้ในบ้าน']);
-
-let products = loadData(STORAGE_KEYS.products, [
-  { id: genId(), name: 'น้ำดื่มขวดเล็ก', barcode: '8850001234561', price: 10, cost: 5, category: 'เครื่องดื่ม' },
-  { id: genId(), name: 'กาแฟกระป๋อง', barcode: '8850001234562', price: 20, cost: 12, category: 'เครื่องดื่ม' },
-  { id: genId(), name: 'มันฝรั่งทอดกรอบ', barcode: '8850001234563', price: 25, cost: 15, category: 'ขนม' },
-  { id: genId(), name: 'ช็อกโกแลตแท่ง', barcode: '8850001234564', price: 15, cost: 8, category: 'ขนม' },
-  { id: genId(), name: 'ทิชชู่ม้วนใหญ่', barcode: '8850001234565', price: 45, cost: 30, category: 'ของใช้ในบ้าน' },
-]);
-
-let coupons = loadData(STORAGE_KEYS.coupons, [
-  { code: 'WELCOME10', amount: 10 }
-]);
-
-let transactions = loadData(STORAGE_KEYS.transactions, []);
+/* state variables (โหลดมาจาก Google Sheets) */
+let categories = [];
+let products = [];
+let coupons = [];
+let transactions = [];
 let qrImageBase64 = localStorage.getItem(STORAGE_KEYS.qr) || '';
 
-/* runtime-only state (ไม่ persist) */
-let cart = [];               // ตะกร้าสินค้าปัจจุบัน [{id,name,price,qty,barcode}]
+let cart = [];               
 let currentCategoryFilter = 'all';
-let appliedCoupon = null;    // คูปองที่ถูกใช้อยู่ในตะกร้าปัจจุบัน
-let html5QrCode = null;      // instance ของกล้องแสกน
-let cameraScanTarget = 'customer'; // 'customer' หรือ 'admin' บอกว่าผลลัพธ์แสกนจะไปที่ไหน
+let appliedCoupon = null;    
+let html5QrCode = null;      
+let cameraScanTarget = 'customer'; 
 let pendingPaymentMethod = null;
 
-/* helper: สร้าง id แบบสุ่ม */
+function showLoading(status) {
+  document.getElementById('loadingOverlay').classList.toggle('d-none', !status);
+}
+
+// ฟังก์ชันโหลดข้อมูลทั้งหมดมาจาก Google Sheets
+async function loadAllDataFromSheets() {
+  showLoading(true);
+  try {
+    let response = await fetch(`${SCRIPT_URL}?action=loadAll`);
+    let resData = await response.json();
+    products = resData.products;
+    categories = resData.categories;
+    coupons = resData.coupons;
+    transactions = resData.transactions;
+    
+    initAppUi();
+  } catch(e) {
+    showToast('ดาวน์โหลดข้อมูลล้มเหลว กรุณาตรวจสอบ URL Apps Script', 'error');
+    console.error(e);
+  } finally {
+    showLoading(false);
+  }
+}
+
+// ฟังก์ชันบันทึกข้อมูลแบบเพิ่มแถวใหม่ (Insert) ลง Google Sheets
+async function insertToSheet(sheetName, dataObj) {
+  showLoading(true);
+  try {
+    let response = await fetch(SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify({ action: "insert", sheet: sheetName, data: dataObj })
+    });
+    return await response.json();
+  } catch(e) {
+    showToast('บันทึกข้อมูลลง Sheet ล้มเหลว', 'error');
+  } finally {
+    showLoading(false);
+  }
+}
+
+// ฟังก์ชันลบข้อมูลออกจาก Google Sheets
+async function deleteFromSheet(sheetName, keyName, keyValue) {
+  showLoading(true);
+  try {
+    let response = await fetch(SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify({ action: "delete", sheet: sheetName, key: keyName, value: keyValue })
+    });
+    return await response.json();
+  } catch(e) {
+    showToast('ลบข้อมูลใน Sheet ล้มเหลว', 'error');
+  } finally {
+    showLoading(false);
+  }
+}
+
 function genId(){
   return 'id_' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
 }
-/* helper: สร้างเลขที่บิลสุ่ม */
 function genBillNo(){
   const d = new Date();
   const stamp = d.getFullYear().toString().slice(2) + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0');
   const rand = Math.floor(1000 + Math.random()*9000);
   return `TS-${stamp}-${rand}`;
 }
-/* helper: format ตัวเลขเป็นสกุลเงินบาท */
 function formatBaht(num){
   return '฿' + Number(num).toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-/* ---------------------------------------------------------------------------
-   3) TOAST NOTIFICATION — แจ้งเตือนนุ่มนวลแทน alert()
-   --------------------------------------------------------------------------- */
 function showToast(message, type = 'success'){
   const toastEl = document.getElementById('mainToast');
   const body = document.getElementById('toastBody');
@@ -814,16 +786,12 @@ function showToast(message, type = 'success'){
     info: 'bi-info-circle-fill text-purple',
     warning: 'bi-exclamation-triangle-fill text-warning'
   };
-  const bg = { success:'#fff', error:'#fff', info:'#fff', warning:'#fff' };
-  toastEl.style.background = bg[type] || '#fff';
+  toastEl.style.background = '#fff';
   body.innerHTML = `<i class="bi ${icons[type] || icons.info} fs-5"></i><span>${message}</span>`;
   const toast = bootstrap.Toast.getOrCreateInstance(toastEl, { delay: 2600 });
   toast.show();
 }
 
-/* ============================================================================
-   4) PAGE NAVIGATION — สลับหน้า ลูกค้า / แอดมิน
-   ============================================================================ */
 function switchPage(page){
   const customerPage = document.getElementById('customerPage');
   const loginPage = document.getElementById('adminLoginPage');
@@ -856,9 +824,6 @@ function switchPage(page){
   }
 }
 
-/* ============================================================================
-   5) CUSTOMER: CATEGORY & PRODUCT RENDERING
-   ============================================================================ */
 function renderCategoryChips(){
   const wrap = document.getElementById('categoryChipRow');
   let html = `<button class="category-chip ${currentCategoryFilter==='all'?'active':''}" onclick="filterByCategory('all')">
@@ -910,16 +875,12 @@ function renderProductGrid(){
   `).join('');
 }
 
-/* กันการฝัง HTML แปลกปลอมจากชื่อสินค้า/หมวดหมู่ */
 function escapeHtml(str){
   const div = document.createElement('div');
   div.textContent = str;
   return div.innerHTML;
 }
 
-/* ============================================================================
-   6) CART SYSTEM — ระบบตะกร้าสินค้า
-   ============================================================================ */
 function addToCartById(productId){
   const product = products.find(p => p.id === productId);
   if(!product) return showToast('ไม่พบสินค้านี้ในระบบ', 'error');
@@ -927,7 +888,7 @@ function addToCartById(productId){
 }
 
 function addToCartByBarcode(barcode){
-  const product = products.find(p => p.barcode === barcode.trim());
+  const product = products.find(p => String(p.barcode).trim() === String(barcode).trim());
   if(!product){
     showToast(`ไม่พบสินค้ารหัสบาร์โค้ด "${barcode}"`, 'error');
     return;
@@ -968,7 +929,7 @@ function getCartSubtotal(){
 function getCartDiscount(){
   if(!appliedCoupon) return 0;
   const subtotal = getCartSubtotal();
-  return Math.min(appliedCoupon.amount, subtotal); // ส่วนลดไม่เกินยอดรวม
+  return Math.min(appliedCoupon.amount, subtotal);
 }
 
 function getCartTotal(){
@@ -1005,12 +966,10 @@ function renderCart(){
     `).join('');
   }
 
-  // อัปเดตยอดเงินต่างๆ
   document.getElementById('cartSubtotal').textContent = formatBaht(getCartSubtotal());
   document.getElementById('cartDiscount').textContent = '-' + formatBaht(getCartDiscount());
   document.getElementById('cartTotal').textContent = formatBaht(getCartTotal());
 
-  // ปุ่มชำระเงิน: กดได้เฉพาะเมื่อมีสินค้าในตะกร้า
   const checkoutBtn = document.getElementById('checkoutBtn');
   checkoutBtn.disabled = cart.length === 0;
 }
@@ -1021,7 +980,7 @@ function applyCoupon(){
   const msgEl = document.getElementById('couponMsg');
   if(!code){ msgEl.innerHTML = ''; return; }
 
-  const coupon = coupons.find(c => c.code.toUpperCase() === code);
+  const coupon = coupons.find(c => String(c.code).toUpperCase() === code);
   if(!coupon){
     appliedCoupon = null;
     msgEl.innerHTML = `<span class="text-danger"><i class="bi bi-x-circle"></i> ไม่พบโค้ดส่วนลดนี้</span>`;
@@ -1034,10 +993,6 @@ function applyCoupon(){
   showToast('ใช้โค้ดส่วนลดสำเร็จ', 'success');
 }
 
-/* ============================================================================
-   7) BARCODE SCANNING — พิมพ์/ยิงบาร์โค้ด + แสกนผ่านกล้อง
-   ============================================================================ */
-// รับ Enter จากช่อง input (รองรับทั้งพิมพ์เองและเครื่องยิงบาร์โค้ดจริงที่พิมพ์เร็วมากแล้วส่ง Enter)
 document.getElementById('barcodeInput').addEventListener('keydown', function(e){
   if(e.key === 'Enter'){
     e.preventDefault();
@@ -1049,9 +1004,8 @@ document.getElementById('barcodeInput').addEventListener('keydown', function(e){
   }
 });
 
-// เปิดกล้องแสกนบาร์โค้ด (ใช้ร่วมกันได้ทั้งหน้าลูกค้าและหน้าแอดมิน)
 function openCameraScanner(target){
-  cameraScanTarget = target; // 'customer' หรือ 'admin'
+  cameraScanTarget = target; 
   const readerCustomer = document.getElementById('cameraReaderCustomer');
   const readerAdmin = document.getElementById('cameraReaderAdmin');
   const activeReaderId = target === 'admin' ? 'cameraReaderAdmin' : 'cameraReaderCustomer';
@@ -1063,7 +1017,6 @@ function openCameraScanner(target){
   const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
   modal.show();
 
-  // เริ่มกล้องหลังจาก modal แสดงผลเสร็จ เพื่อให้ container มีขนาดจริง
   modalEl.addEventListener('shown.bs.modal', function handler(){
     startCameraScanner(activeReaderId);
     modalEl.removeEventListener('shown.bs.modal', handler);
@@ -1078,7 +1031,6 @@ function startCameraScanner(readerId){
     { facingMode: 'environment' },
     config,
     (decodedText) => {
-      // แสกนสำเร็จ -> เล่นเสียง Beep แล้วดำเนินการตามหน้าที่เรียกใช้งาน
       playBeep();
       if(cameraScanTarget === 'admin'){
         document.getElementById('pBarcode').value = decodedText;
@@ -1089,7 +1041,7 @@ function startCameraScanner(readerId){
       stopCameraScanner();
       bootstrap.Modal.getInstance(document.getElementById('cameraModal'))?.hide();
     },
-    () => { /* เฟรมที่ยังไม่พบบาร์โค้ด — ไม่ต้องทำอะไร */ }
+    () => { }
   ).catch(() => {
     showToast('ไม่สามารถเปิดกล้องได้ กรุณาอนุญาตการเข้าถึงกล้อง', 'error');
   });
@@ -1108,10 +1060,6 @@ function playBeep(){
   audio.play().catch(()=>{});
 }
 
-/* ============================================================================
-   8) PAYMENT SYSTEM — เงินสด / QR + คำนวณเงินทอนแบบ Real-time
-   ============================================================================ */
-// เมื่อเปิด modal ชำระเงิน ให้อัปเดตยอดที่ต้องชำระในทั้งสองแท็บ
 document.getElementById('paymentModal').addEventListener('show.bs.modal', function(){
   const total = getCartTotal();
   document.getElementById('cashTotalDisplay').textContent = formatBaht(total);
@@ -1121,7 +1069,6 @@ document.getElementById('paymentModal').addEventListener('show.bs.modal', functi
   document.getElementById('confirmCashBtn').disabled = true;
   document.getElementById('cashWarning').classList.add('d-none');
 
-  // แสดง QR Code จากที่แอดมินตั้งค่าไว้
   const qrWrap = document.getElementById('qrPayWrap');
   if(qrImageBase64){
     qrWrap.innerHTML = `<img src="${qrImageBase64}" alt="QR ชำระเงิน" style="width:220px;height:220px;object-fit:contain;border:1px solid var(--purple-100);border-radius:12px;">`;
@@ -1130,7 +1077,6 @@ document.getElementById('paymentModal').addEventListener('show.bs.modal', functi
   }
 });
 
-// คำนวณเงินทอนแบบ Real-time เมื่อพิมพ์จำนวนเงินที่รับมา
 document.getElementById('cashReceivedInput').addEventListener('input', function(){
   const total = getCartTotal();
   const received = parseFloat(this.value) || 0;
@@ -1164,8 +1110,8 @@ function confirmQRPayment(){
   finalizeSale('สแกนจ่าย (QR)', null, null);
 }
 
-/* บันทึกการขาย สร้างใบเสร็จ และอัปเดตยอดขายเข้าระบบรายงาน */
-function finalizeSale(paymentMethod, received, change){
+// ยิงข้อมูลบันทึกบิลธุรกรรมการขายเข้า Google Sheets
+async function finalizeSale(paymentMethod, received, change){
   const subtotal = getCartSubtotal();
   const discount = getCartDiscount();
   const total = getCartTotal();
@@ -1181,21 +1127,18 @@ function finalizeSale(paymentMethod, received, change){
     cost: totalCost
   };
 
-  transactions.push(transaction);
-  saveData(STORAGE_KEYS.transactions, transactions);
-
-  // ปิด modal ชำระเงิน แล้วเปิดใบเสร็จ
-  bootstrap.Modal.getInstance(document.getElementById('paymentModal'))?.hide();
-  renderReceipt(transaction);
-  const receiptModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('receiptModal'));
-  receiptModal.show();
-
-  showToast('ชำระเงินสำเร็จ!', 'success');
+  // ส่งบันทึกลงชีต
+  let res = await insertToSheet('transactions', transaction);
+  if(res && res.status === 'success') {
+    transactions.push(transaction); // sync state หน้าแอป
+    bootstrap.Modal.getInstance(document.getElementById('paymentModal'))?.hide();
+    renderReceipt(transaction);
+    const receiptModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('receiptModal'));
+    receiptModal.show();
+    showToast('ชำระเงินและบันทึกข้อมูลเรียบร้อย!', 'success');
+  }
 }
 
-/* ============================================================================
-   9) RECEIPT SLIP & PDF EXPORT
-   ============================================================================ */
 function renderReceipt(tx){
   const dt = new Date(tx.datetime);
   const dateStr = dt.toLocaleDateString('th-TH', { year:'numeric', month:'long', day:'numeric' });
@@ -1251,7 +1194,6 @@ function downloadReceiptPDF(){
   showToast('กำลังดาวน์โหลดใบเสร็จ...', 'info');
 }
 
-/* ปิดหน้าต่างใบเสร็จ -> เคลียร์ตะกร้าตามสเปค */
 function closeReceipt(){
   bootstrap.Modal.getInstance(document.getElementById('receiptModal'))?.hide();
   cart = [];
@@ -1261,9 +1203,6 @@ function closeReceipt(){
   renderCart();
 }
 
-/* ============================================================================
-   10) ADMIN: LOGIN / LOGOUT
-   ============================================================================ */
 const ADMIN_CREDENTIALS = { username: '1234@admin.ac.th', password: 'admin2255' };
 
 document.getElementById('adminLoginForm').addEventListener('submit', function(e){
@@ -1291,9 +1230,6 @@ function adminLogout(){
   switchPage('customer');
 }
 
-/* ============================================================================
-   11) ADMIN: TAB SWITCHING
-   ============================================================================ */
 function switchAdminTab(tab){
   document.querySelectorAll('.admin-tab-content').forEach(el => el.classList.add('d-none'));
   document.getElementById('tab-' + tab).classList.remove('d-none');
@@ -1312,10 +1248,8 @@ function renderAdminAll(){
   populateCategoryDropdown();
 }
 
-/* ============================================================================
-   12) ADMIN: CATEGORY MANAGEMENT
-   ============================================================================ */
-document.getElementById('categoryForm').addEventListener('submit', function(e){
+// เพิ่มหมวดหมู่ลง Google Sheets
+document.getElementById('categoryForm').addEventListener('submit', async function(e){
   e.preventDefault();
   const input = document.getElementById('newCategoryInput');
   const name = input.value.trim();
@@ -1324,13 +1258,16 @@ document.getElementById('categoryForm').addEventListener('submit', function(e){
     showToast('มีหมวดหมู่นี้อยู่แล้ว', 'warning');
     return;
   }
-  categories.push(name);
-  saveData(STORAGE_KEYS.categories, categories);
-  input.value = '';
-  renderAdminCategoryList();
-  populateCategoryDropdown();
-  renderCategoryChips(); // อัปเดตหน้าลูกค้าทันที
-  showToast('เพิ่มหมวดหมู่สำเร็จ', 'success');
+  
+  let res = await insertToSheet('categories', { name: name });
+  if(res && res.status === 'success') {
+    categories.push(name);
+    input.value = '';
+    renderAdminCategoryList();
+    populateCategoryDropdown();
+    renderCategoryChips(); 
+    showToast('เพิ่มหมวดหมู่สำเร็จ', 'success');
+  }
 });
 
 function renderAdminCategoryList(){
@@ -1347,30 +1284,33 @@ function renderAdminCategoryList(){
   `).join('');
 }
 
-function deleteCategory(cat){
+// ลบหมวดหมู่ออกจาก Google Sheets
+async function deleteCategory(cat){
   const inUse = products.some(p => p.category === cat);
   if(inUse){
     showToast('ไม่สามารถลบได้ เนื่องจากมีสินค้าที่ใช้หมวดหมู่นี้อยู่', 'error');
     return;
   }
-  categories = categories.filter(c => c !== cat);
-  saveData(STORAGE_KEYS.categories, categories);
-  renderAdminCategoryList();
-  populateCategoryDropdown();
-  renderCategoryChips();
-  if(currentCategoryFilter === cat){ currentCategoryFilter = 'all'; renderProductGrid(); }
-  showToast('ลบหมวดหมู่แล้ว', 'info');
+  
+  let res = await deleteFromSheet('categories', 'name', cat);
+  if(res && res.status === 'success') {
+    categories = categories.filter(c => c !== cat);
+    renderAdminCategoryList();
+    populateCategoryDropdown();
+    renderCategoryChips();
+    if(currentCategoryFilter === cat){ currentCategoryFilter = 'all'; renderProductGrid(); }
+    showToast('ลบหมวดหมู่แล้ว', 'info');
+  }
 }
 
 function populateCategoryDropdown(){
   const select = document.getElementById('pCategory');
+  if(!select) return;
   select.innerHTML = categories.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
 }
 
-/* ============================================================================
-   13) ADMIN: PRODUCT MANAGEMENT
-   ============================================================================ */
-document.getElementById('productForm').addEventListener('submit', function(e){
+// เพิ่มสินค้าลง Google Sheets
+document.getElementById('productForm').addEventListener('submit', async function(e){
   e.preventDefault();
   const name = document.getElementById('pName').value.trim();
   const price = parseFloat(document.getElementById('pPrice').value);
@@ -1380,17 +1320,21 @@ document.getElementById('productForm').addEventListener('submit', function(e){
 
   if(!name || isNaN(price) || isNaN(cost) || !category || !barcode) return;
 
-  if(products.some(p => p.barcode === barcode)){
+  if(products.some(p => String(p.barcode) === barcode)){
     showToast('มีรหัสบาร์โค้ดนี้อยู่แล้วในระบบ', 'error');
     return;
   }
 
-  products.push({ id: genId(), name, price, cost, category, barcode });
-  saveData(STORAGE_KEYS.products, products);
-  this.reset();
-  renderAdminProductTable();
-  renderProductGrid(); // อัปเดตหน้าลูกค้าทันที
-  showToast('เพิ่มสินค้าสำเร็จ', 'success');
+  const newProduct = { id: genId(), name, price, cost, category, barcode };
+  
+  let res = await insertToSheet('products', newProduct);
+  if(res && res.status === 'success') {
+    products.push(newProduct);
+    this.reset();
+    renderAdminProductTable();
+    renderProductGrid(); 
+    showToast('เพิ่มสินค้าลงคลังสำเร็จ', 'success');
+  }
 });
 
 function renderAdminProductTable(){
@@ -1411,32 +1355,37 @@ function renderAdminProductTable(){
   `).join('');
 }
 
-function deleteProduct(id){
-  products = products.filter(p => p.id !== id);
-  saveData(STORAGE_KEYS.products, products);
-  renderAdminProductTable();
-  renderProductGrid();
-  showToast('ลบสินค้าแล้ว', 'info');
+// ลบสินค้าออกจาก Google Sheets
+async function deleteProduct(id){
+  let res = await deleteFromSheet('products', 'id', id);
+  if(res && res.status === 'success') {
+    products = products.filter(p => p.id !== id);
+    renderAdminProductTable();
+    renderProductGrid();
+    showToast('ลบสินค้าออกจากคลังแล้ว', 'info');
+  }
 }
 
-/* ============================================================================
-   14) ADMIN: COUPON MANAGEMENT
-   ============================================================================ */
-document.getElementById('couponForm').addEventListener('submit', function(e){
+// เพิ่มคูปองลง Google Sheets
+document.getElementById('couponForm').addEventListener('submit', async function(e){
   e.preventDefault();
   const code = document.getElementById('couponCode').value.trim().toUpperCase();
   const amount = parseFloat(document.getElementById('couponAmount').value);
   if(!code || isNaN(amount) || amount <= 0) return;
 
-  if(coupons.some(c => c.code.toUpperCase() === code)){
+  if(coupons.some(c => String(c.code).toUpperCase() === code)){
     showToast('มีโค้ดนี้อยู่แล้ว', 'error');
     return;
   }
-  coupons.push({ code, amount });
-  saveData(STORAGE_KEYS.coupons, coupons);
-  this.reset();
-  renderAdminCouponTable();
-  showToast('สร้างคูปองสำเร็จ', 'success');
+  
+  const newCoupon = { code, amount };
+  let res = await insertToSheet('coupons', newCoupon);
+  if(res && res.status === 'success') {
+    coupons.push(newCoupon);
+    this.reset();
+    renderAdminCouponTable();
+    showToast('สร้างคูปองเรียบร้อย', 'success');
+  }
 });
 
 function renderAdminCouponTable(){
@@ -1454,16 +1403,16 @@ function renderAdminCouponTable(){
   `).join('');
 }
 
-function deleteCoupon(code){
-  coupons = coupons.filter(c => c.code !== code);
-  saveData(STORAGE_KEYS.coupons, coupons);
-  renderAdminCouponTable();
-  showToast('ลบคูปองแล้ว', 'info');
+// ลบคูปองออกจาก Google Sheets
+async function deleteCoupon(code){
+  let res = await deleteFromSheet('coupons', 'code', code);
+  if(res && res.status === 'success') {
+    coupons = coupons.filter(c => c.code !== code);
+    renderAdminCouponTable();
+    showToast('ลบคูปองแล้ว', 'info');
+  }
 }
 
-/* ============================================================================
-   15) ADMIN: QR CODE SETTINGS (อัปโหลด -> Base64 -> LocalStorage)
-   ============================================================================ */
 document.getElementById('qrUploadInput').addEventListener('change', function(e){
   const file = e.target.files[0];
   if(!file) return;
@@ -1486,9 +1435,6 @@ function renderQRPreview(){
   }
 }
 
-/* ============================================================================
-   16) ADMIN: FINANCIAL REPORT — สรุปรายรับ-รายจ่าย พร้อมตัวกรองช่วงเวลา
-   ============================================================================ */
 function filterTransactionsByPeriod(period){
   const now = new Date();
   return transactions.filter(tx => {
@@ -1502,7 +1448,7 @@ function filterTransactionsByPeriod(period){
     if(period === 'year'){
       return d.getFullYear() === now.getFullYear();
     }
-    return true; // 'all'
+    return true; 
   });
 }
 
@@ -1510,8 +1456,8 @@ function renderReport(){
   const period = document.getElementById('reportFilter').value;
   const filtered = filterTransactionsByPeriod(period).sort((a,b) => new Date(b.datetime) - new Date(a.datetime));
 
-  const totalRevenue = filtered.reduce((s,tx) => s + tx.total, 0);
-  const totalCost = filtered.reduce((s,tx) => s + tx.cost, 0);
+  const totalRevenue = filtered.reduce((s,tx) => s + parseFloat(tx.total), 0);
+  const totalCost = filtered.reduce((s,tx) => s + parseFloat(tx.cost), 0);
   const totalProfit = totalRevenue - totalCost;
 
   document.getElementById('statRevenue').textContent = formatBaht(totalRevenue);
@@ -1538,26 +1484,16 @@ function renderReport(){
   }).join('');
 }
 
-/* ============================================================================
-   17) APP INITIALIZATION — เริ่มต้นระบบทั้งหมดเมื่อโหลดหน้าเว็บ
-   ============================================================================ */
-function initApp(){
-  saveData(STORAGE_KEYS.categories, categories);
-  saveData(STORAGE_KEYS.products, products);
-  saveData(STORAGE_KEYS.coupons, coupons);
-
+// สั่งทำงานแสดงผล UI หลังดึงข้อมูลชีตสำเร็จ
+function initAppUi(){
   renderCategoryChips();
   renderProductGrid();
   renderCart();
   populateCategoryDropdown();
-
-  // ถ้ามี session แอดมินค้างอยู่ (รีเฟรชหน้า) ให้พาไปหน้าแอดมินเลย
-  if(sessionStorage.getItem(STORAGE_KEYS.adminSession) === 'true'){
-    // ไม่ auto-redirect เพื่อให้ลูกค้าเปิดมาเจอหน้าร้านก่อนเสมอ แต่เตรียมข้อมูลไว้
-  }
 }
 
-initApp();
+// รันแอปพลิเคชัน
+loadAllDataFromSheets();
 </script>
 </body>
 </html>
